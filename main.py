@@ -36,7 +36,7 @@ class AlastorBot(commands.Bot):
 
 bot = AlastorBot()
 
-@bot.tree.command(name="alastor", description="Sends the text you written.")
+@bot.tree.command(name="Hazbin", description="Sends the text you written.")
 @app_commands.describe(text="The text you want the bot to send")
 @app_commands.allowed_contexts(guilds=True, dms=True, private_channels=True)
 @app_commands.allowed_installs(guilds=True, users=True)
