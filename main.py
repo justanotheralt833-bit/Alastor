@@ -27,6 +27,9 @@ def run_web():
 
 # --- DISCORD BOTS ---
 intents = discord.Intents.default()
+intents.message_content = True  # Required to read message text - must also be enabled
+                                 # in the Discord Developer Portal for EACH bot app
+                                 # (Bot tab -> Privileged Gateway Intents -> Message Content Intent)
 
 class HazbinBot(commands.Bot):
     def __init__(self, token_id):
@@ -58,6 +61,23 @@ class HazbinBot(commands.Bot):
     async def on_ready(self):
         log(f"Bot {self.token_id}: Logged in as {self.user} (ID: {self.user.id})")
         log("------")
+
+    async def on_message(self, message: discord.Message):
+        # Ignore the bot's own messages
+        if message.author.id == self.user.id:
+            return
+
+        location = f"DM with {message.author}" if message.guild is None else \
+            f"#{message.channel} in {message.guild.name}"
+
+        content = message.content if message.content else "[no text content]"
+        if message.attachments:
+            content += f" [attachments: {', '.join(a.filename for a in message.attachments)}]"
+
+        log(f"[MSG] Bot {self.token_id} | {location} | {message.author}: {content}")
+
+        # Required so prefix commands (e.g. "!") still work
+        await self.process_commands(message)
 
 async def main():
     log("[DEBUG] Starting Hazbin Multi-Bot script with staggered startup...")
@@ -103,3 +123,4 @@ if __name__ == "__main__":
         pass
     except Exception as e:
         log(f"[CRITICAL ERROR] {e}")
+
